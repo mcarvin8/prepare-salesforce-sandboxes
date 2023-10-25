@@ -1,0 +1,49 @@
+stages: 
+  - sandbox
+
+.python-container:
+  image: python:3.9
+  before_script:
+    - python -m venv "venv"
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install simple-salesforce
+
+createAndRefreshSandbox:
+  extends: .python-container
+  stage: sandbox
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+      when: always
+    - when: never
+  allow_failure: true
+  script:
+    - python ./create_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+  tags: 
+    - aws,prd,us-west-2
+
+querySandbox:
+  extends: .python-container
+  stage: sandbox
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+      when: manual
+    - when: never
+  allow_failure: true
+  script:
+    - python ./query_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+  tags: 
+    - aws,prd,us-west-2
+
+deleteSandbox:
+  extends: .python-container
+  stage: sandbox
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+      when: manual
+    - when: never
+  allow_failure: true
+  script:
+    - python ./delete_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+  tags: 
+    - aws,prd,us-west-2

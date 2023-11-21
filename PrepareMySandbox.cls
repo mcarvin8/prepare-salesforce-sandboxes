@@ -9,11 +9,11 @@ global class PrepareMySandbox implements SandboxPostCopy {
         System.debug('Sandbox ID: ' + context.sandboxId());
         System.debug('Sandbox Name: ' + context.sandboxName());
 
-        updateProfilesForPublicGroupMembers();
+        updateProfilesAndResetPasswordsForPublicGroupMembers();
         // Additional logic to prepare the sandbox for use can be added here.
     }
 
-    public void updateProfilesForPublicGroupMembers() {
+    public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
         String publicGroupName = 'Common Dev Refresh July 23';
         String newProfileId = '00e0b000001KWuY';
 
@@ -25,8 +25,11 @@ global class PrepareMySandbox implements SandboxPostCopy {
             if (!usersToUpdate.isEmpty()) {
                 update usersToUpdate;
                 System.debug('Profile updated for ' + usersToUpdate.size() + ' users.');
+
+                // Reset passwords for updated users
+                resetPasswords(usersToUpdate);
             } else {
-                System.debug('No eligible users found in the Public Group.');
+                System.debug('No eligible active users found in the Public Group.');
             }
         } else {
             System.debug('Public Group not found.');
@@ -51,12 +54,19 @@ global class PrepareMySandbox implements SandboxPostCopy {
             }
         }
     
-        // Query and update User profiles
-        for (User user : [SELECT Id, ProfileId FROM User WHERE Id IN :userIds]) {
+        // Query and update active User profiles
+        for (User user : [SELECT Id, ProfileId FROM User WHERE Id IN :userIds AND IsActive = true]) {
             user.ProfileId = newProfileId;
             usersToUpdate.add(user);
         }
     
         return usersToUpdate;
+    }
+
+    private void resetPasswords(List<User> users) {
+        for (User u : users) {
+            System.resetPassword(u.Id, true); // The second parameter generates a new password and sends an email
+        }
+        System.debug('Passwords reset for ' + users.size() + ' users.');
     }
 }

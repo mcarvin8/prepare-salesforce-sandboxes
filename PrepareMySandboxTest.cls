@@ -1,7 +1,7 @@
 @isTest
 class PrepareMySandboxTest {
     @isTest
-    public static void testUpdateProfilesForPublicGroupMembers() {
+    public static void testUpdateProfilesAndResetPasswordsForPublicGroupMembers() {
         // Create and insert test data (Public Group, Users, etc.)
         Group publicGroup = new Group(Name = 'TestPublicGroup', Type = 'Regular');
         insert publicGroup;
@@ -19,7 +19,8 @@ class PrepareMySandboxTest {
                 LocaleSidKey = 'en_US',
                 ProfileId = newProfile.Id,
                 TimeZoneSidKey = 'America/Los_Angeles',
-                UserName = 'user' + i + '@domain.com'
+                UserName = 'user' + i + '@domain.com',
+                IsActive = true
             );
             testUsers.add(user);
         }
@@ -38,13 +39,18 @@ class PrepareMySandboxTest {
 
         // Call the method you want to test
         Test.startTest();
-        sandboxPreparer.updateProfilesForPublicGroupMembers();
+        sandboxPreparer.updateProfilesAndResetPasswordsForPublicGroupMembers();
         Test.stopTest();
 
         // Verify that the users' profiles have been updated as expected
         for (User user : testUsers) {
             User updatedUser = [SELECT ProfileId FROM User WHERE Id = :user.Id];
             System.assertEquals(newProfile.Id, updatedUser.ProfileId, 'User profile not updated.');
+
+            // Attempt to log in as the user to verify the password reset
+            System.runAs(user) {
+                System.assertNotEquals(null, UserInfo.getSessionId(), 'User password not reset.');
+            }
         }
     }
 }

@@ -6,20 +6,20 @@ class PrepareMySandboxTest {
         Group publicGroup = new Group(Name = 'TestPublicGroup', Type = 'Regular');
         insert publicGroup;
 
-        Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
+        Profile newProfile = [SELECT Id FROM Profile WHERE Id = '00e0b000001KWuY' LIMIT 1];
         
         List<User> testUsers = new List<User>();
         for (Integer i = 1; i <= 5; i++) {
             User user = new User(
                 Alias = 'U' + i,
-                Email = 'user' + i + '@domain.com',
+                Email = 'user' + i + '@avalara.com',
                 EmailEncodingKey = 'UTF-8',
                 LastName = 'User' + i,
                 LanguageLocaleKey = 'en_US',
                 LocaleSidKey = 'en_US',
                 ProfileId = newProfile.Id,
                 TimeZoneSidKey = 'America/Los_Angeles',
-                UserName = 'user' + i + '@domain.com',
+                UserName = 'user' + i + '@avalara.com',
                 IsActive = true
             );
             testUsers.add(user);

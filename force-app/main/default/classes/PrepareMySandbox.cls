@@ -14,10 +14,10 @@ global class PrepareMySandbox implements SandboxPostCopy {
     }
 
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
-        String publicGroupName = 'Common Dev Refresh July 23';
+        String publicGroupId = '00G5a000003ji0R';
         String newProfileId = '00e0b000001KWuY';
 
-        Group publicGroup = getPublicGroup(publicGroupName);
+        Group publicGroup = getPublicGroup(publicGroupId);
 
         if (publicGroup != null) {
             List<User> usersToUpdate = getUsersToUpdate(publicGroup, newProfileId);
@@ -36,8 +36,8 @@ global class PrepareMySandbox implements SandboxPostCopy {
         }
     }
 
-    private Group getPublicGroup(String groupName) {
-        return [SELECT Id FROM Group WHERE Name = :groupName LIMIT 1];
+    private Group getPublicGroup(String groupId) {
+        return [SELECT Id FROM Group WHERE Id = :groupId LIMIT 1];
     }
 
     private List<User> getUsersToUpdate(Group publicGroup, String newProfileId) {

@@ -48,13 +48,13 @@ def main(user_name, user_password, user_token, sandbox_name):
 
         # only log status if it's not Deleting or Deleted
         if elgible_sandbox_info:
-            logging.info('The sandbox %s has been found.', sandbox_name)
+            logging.info('The sandbox `%s` has been found.', sandbox_name)
             logging.info('Current Status: %s', eligible_status)
         else:
-            logging.info('No Active Sandboxes %s found in the org.', sandbox_name)
+            logging.info('ERROR: No Active Sandboxes named `%s` found in the org.', sandbox_name)
             sys.exit(1)
     else:
-        logging.info('A Sandbox with the name %s not found in the org.', sandbox_name)
+        logging.info('ERROR: A Sandbox with the name `%s` was not found in the org.', sandbox_name)
         sys.exit(1)
 
 

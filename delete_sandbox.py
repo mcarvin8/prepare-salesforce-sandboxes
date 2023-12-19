@@ -41,7 +41,7 @@ def main(user_name, user_password, user_token, sandbox_name):
     Main function
     """
     if sandbox_name in DO_NOT_DELETE:
-        logging.info(' The sanbox is in the DO NOT DELETE list')
+        logging.info('ERROR: The sandbox `%s` is in the DO NOT DELETE list', sandbox_name)
         sys.exit(1)
 
     sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
@@ -52,7 +52,7 @@ def main(user_name, user_password, user_token, sandbox_name):
 
     # Exit if sandbox records exist, but the sandbox is already deleted in the org
     if all(record.get('Status') in {'Deleted', 'Deleting'} for record in records):
-        logging.info('The sandbox has already been deleted in the Org.')
+        logging.info('ERROR: The sandbox has already been deleted in the Org.')
         sys.exit(1)
 
     if records:
@@ -60,12 +60,11 @@ def main(user_name, user_password, user_token, sandbox_name):
         if elgible_sandbox_info:
             delete_sandbox(sandbox_id, sf)
         else:
-            logging.info('Sandbox %s is not eligible for a sandbox deletion', sandbox_name)
-            logging.info('The possible reason is:')
-            logging.info('The sandbox was recently refreshed or created within the past day')
+            logging.info('ERROR: Sandbox %s is not eligible for a sandbox deletion.', sandbox_name)
+            logging.info('The sandbox was recently refreshed or created within the past day.')
             sys.exit(1)
     else:
-        logging.info('A sandbox with the name %s could not be found in the Org.', sandbox_name)
+        logging.info('ERROR: A sandbox with the name `%s` could not be found in the Org.', sandbox_name)
         sys.exit(1)
 
 

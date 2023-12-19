@@ -50,7 +50,7 @@ def main(user_name, user_password, user_token, sandbox_name):
     Main function
     """
     if sandbox_name in DO_NOT_REFRESH:
-        logging.info(' The sanbox is in the DO NOT REFRESH list')
+        logging.info('ERROR: The sandbox `%s` is in the DO NOT REFRESH list', sandbox_name)
         sys.exit(1)
 
     sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
@@ -82,9 +82,8 @@ def main(user_name, user_password, user_token, sandbox_name):
             sandbox_data.update(activate)
             refresh_sandbox(sandbox_id, sandbox_data, sf)
         else:
-            logging.info('Sandbox %s is not eligible for a sandbox refresh', sandbox_name)
-            logging.info('The possible reasons are:')
-            logging.info('A) The sandbox was refreshed within the past day')
+            logging.info('ERROR: Sandbox %s is not eligible for a sandbox refresh', sandbox_name)
+            logging.info('The sandbox was created or refreshed within the past day.')
             sys.exit(1)
     else:
         create_sandbox(sandbox_name, sandbox_data, sf)

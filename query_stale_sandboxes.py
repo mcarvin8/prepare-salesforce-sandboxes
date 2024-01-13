@@ -1,6 +1,5 @@
 """
     Query Stale Sandboxes with Tooling API.
-    Requires your Production user.name, password, and Security Token.
 """
 import argparse
 import datetime
@@ -19,9 +18,7 @@ def parse_args():
         Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to query sandboxes.')
-    parser.add_argument('-u', '--user')
-    parser.add_argument('-p', '--password')
-    parser.add_argument('-t', '--token')
+    parser.add_argument('-a', '--alias')
     args = parser.parse_args()
     return args
 
@@ -45,11 +42,11 @@ def log_sandbox_info(sandbox_name, start_date):
     logging.info(sbx_info)
 
 
-def main(user_name, user_password, user_token):
+def main(alias):
     """
         Main function
     """
-    sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
+    sf = sandbox_functions.get_salesforce_connection(alias)
 
     query_data = sf.toolingexecute('query?q=SELECT+StartDate,SandboxName,Status+FROM+SandboxProcess','GET')
     records = query_data.get('records', [])
@@ -81,5 +78,4 @@ def main(user_name, user_password, user_token):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.user, inputs.password,
-         inputs.token)
+    main(inputs.alias)

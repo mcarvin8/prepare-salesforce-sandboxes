@@ -19,9 +19,7 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to create or refresh a sandbox.')
-    parser.add_argument('-u', '--user')
-    parser.add_argument('-p', '--password')
-    parser.add_argument('-t', '--token')
+    parser.add_argument('-a', '--alias')
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to create or refresh')
     args = parser.parse_args()
     return args
@@ -45,7 +43,7 @@ def refresh_sandbox(sandbox_id, sandbox_data, salesforce_connection):
     logging.info('Sandbox refresh has been initiated.')
 
 
-def main(user_name, user_password, user_token, sandbox_name):
+def main(alias, sandbox_name):
     """
     Main function
     """
@@ -53,7 +51,7 @@ def main(user_name, user_password, user_token, sandbox_name):
         logging.info('ERROR: The sandbox `%s` is in the DO NOT REFRESH list', sandbox_name)
         sys.exit(1)
 
-    sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
+    sf = sandbox_functions.get_salesforce_connection(alias)
 
     # Update Public Group and Apex Class ID for your org
     sandbox_data = {
@@ -91,4 +89,4 @@ def main(user_name, user_password, user_token, sandbox_name):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.user, inputs.password, inputs.token, inputs.sandbox)
+    main(inputs.alias, inputs.sandbox)

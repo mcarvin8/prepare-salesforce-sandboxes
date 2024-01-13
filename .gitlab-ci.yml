@@ -1,16 +1,26 @@
 stages: 
   - sandbox
 
-.python-container:
-  image: python:3.9
+# Update to install the desired version of the Salesforce CLI
+# on your preferred docker container
+.salesforce-container:
+  image: ubuntu:latest
+
   before_script:
-    - python -m venv "venv"
+    - apt-get update
+    - apt-get install -y python3-venv python3
+    - curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+    - apt-get install -y nodejs
+    - npm install --global @salesforce/cli@latest
+    - sf version --verbose --json
+    - python3 ./authenticate_sfdx.py --alias PRODUCTION --url $PRODUCTION_AUTH_URL
+    - python3 -m venv "venv"
     - source venv/bin/activate
     - pip install --upgrade pip
     - pip install simple-salesforce
 
 createAndRefreshSandbox:
-  extends: .python-container
+  extends: .salesforce-container
   stage: sandbox
   rules:
     - if: $CI_PIPELINE_SOURCE == 'web'
@@ -18,12 +28,12 @@ createAndRefreshSandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./create_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+    - python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
   tags: 
     - aws,prd,us-west-2
 
 querySandbox:
-  extends: .python-container
+  extends: .salesforce-container
   stage: sandbox
   rules:
     - if: $CI_PIPELINE_SOURCE == 'web'
@@ -31,12 +41,12 @@ querySandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./query_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+    - python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
   tags: 
     - aws,prd,us-west-2
 
 deleteSandbox:
-  extends: .python-container
+  extends: .salesforce-container
   stage: sandbox
   rules:
     - if: $CI_PIPELINE_SOURCE == 'web'
@@ -44,6 +54,6 @@ deleteSandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./delete_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+    - python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
   tags: 
     - aws,prd,us-west-2

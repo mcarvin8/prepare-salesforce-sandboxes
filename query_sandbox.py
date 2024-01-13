@@ -16,19 +16,17 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to post the sandbox status.')
-    parser.add_argument('-u', '--user')
-    parser.add_argument('-p', '--password')
-    parser.add_argument('-t', '--token')
+    parser.add_argument('-a', '--alias')
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to query')
     args = parser.parse_args()
     return args
 
 
-def main(user_name, user_password, user_token, sandbox_name):
+def main(alias, sandbox_name):
     """
     Main function
     """
-    sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
+    sf = sandbox_functions.get_salesforce_connection(alias)
 
     # Check if the provided sandbox name exists
     query_data = sf.toolingexecute(f"query?q=SELECT+StartDate,SandboxName,Status+FROM+SandboxProcess+WHERE+SandboxName+=+'{sandbox_name}'",'GET')
@@ -60,4 +58,4 @@ def main(user_name, user_password, user_token, sandbox_name):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.user, inputs.password, inputs.token, inputs.sandbox)
+    main(inputs.alias, inputs.sandbox)

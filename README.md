@@ -1,12 +1,23 @@
 # Prepare Sandboxes
 Python scripts which uses Simple Salesforce to create, refresh, and delete sandboxes.
 
-Scripts require a Production User Email, Password, and Security Token (https://help.salesforce.com/s/articleView?id=sf.user_security_token.htm&type=5).
+The environment requires Python 3 and the Salesforce CLI (`sf`).
 
+## Authenticate to Production using the Salesforce CLI
+
+You must first authenticate to your production org using the Salesforce CLI.
+
+The below sandbox Python scripts require the Production Alias used when authenticating.
+
+You can use the provided SFDX authenticate script with the Force Auth URL and the desired alias.
+
+```
+python ./authenticate_sfdx.py --alias PRODUCTION --url $PRODUCTION_AUTH_URL
+```
 
 ## Create and Refresh Sandboxes
 ```
-python ./create_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
 ```
 
 The above script either creates a new sandbox or refreshes an existing sandbox. Sandbox refreshes will auto-activate, so you will not be able to revert the sandbox once this script runs.
@@ -45,7 +56,7 @@ If you don't want to use this Apex Class, remove the `ApexClassId` line from `cr
 
 ## Delete Sandboxes
 ```
-python ./delete_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
 ```
 
 This script will delete sandboxes assuming the sandbox meets deletion criteria (cannot be created or refreshes within the past day).
@@ -57,7 +68,7 @@ DO_NOT_DELETE = ['FullQA', 'dev']
 
 ## Query Sandboxes
 ```
-python ./query_sandbox.py --user "$PROD_USER" --password "$PROD_PASSWORD" --token "$PROD_TOKEN" --sandbox "$SANDBOX"
+python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
 ```
 
 This script can be used to check the current sandbox status. 

@@ -19,9 +19,7 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to delete a sandbox.')
-    parser.add_argument('-u', '--user')
-    parser.add_argument('-p', '--password')
-    parser.add_argument('-t', '--token')
+    parser.add_argument('-a', '--alias')
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to delete')
     args = parser.parse_args()
     return args
@@ -36,7 +34,7 @@ def delete_sandbox(sandbox_id, salesforce_connection):
     logging.info('Sandbox deletion has been initiated.')
 
 
-def main(user_name, user_password, user_token, sandbox_name):
+def main(alias, sandbox_name):
     """
     Main function
     """
@@ -44,7 +42,7 @@ def main(user_name, user_password, user_token, sandbox_name):
         logging.info('ERROR: The sandbox `%s` is in the DO NOT DELETE list', sandbox_name)
         sys.exit(1)
 
-    sf = sandbox_functions.get_salesforce_connection(user_name, user_password, user_token)
+    sf = sandbox_functions.get_salesforce_connection(alias)
 
     # Check if the provided sandbox name exists
     query_data = sf.toolingexecute(f"query?q=SELECT+StartDate,SandboxName,SandboxInfoId,Status+FROM+SandboxProcess+WHERE+SandboxName+=+'{sandbox_name}'",'GET')
@@ -70,4 +68,4 @@ def main(user_name, user_password, user_token, sandbox_name):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.user, inputs.password, inputs.token, inputs.sandbox)
+    main(inputs.alias, inputs.sandbox)

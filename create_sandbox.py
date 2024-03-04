@@ -19,31 +19,35 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to create or refresh a sandbox.')
-    parser.add_argument('-a', '--alias')
-    parser.add_argument('-s', '--sandbox', help='Name of the sandbox to create or refresh')
+    parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=True)
+    parser.add_argument('-s', '--sandbox', help='Name of the sandbox to create or refresh', required=True)
+    parser.add_argument('-l', '--license', help='Type of license for the sandbox (`Developer`, `Developer_Pro`, `Partial`, `Full`)',
+                        choices=['Developer', 'Developer_Pro', 'Partial', 'Full'], required=True)
+    parser.add_argument('-c', '--class',  dest='class_id', help='Apex Class ID to run post sandbox activation')
+    parser.add_argument('-g', '--group', help='Public Group ID to provide access to sandbox')
     args = parser.parse_args()
     return args
 
 
-def create_sandbox(sandbox_name, sandbox_data, salesforce_connection):
+def create_sandbox(sandbox_name, sandbox_definition, salesforce_connection):
     """
         Create a sandbox
     """
     logging.info('Creating a new sandbox %s', sandbox_name)
-    salesforce_connection.toolingexecute("sobjects/SandboxInfo",'POST', sandbox_data)
+    salesforce_connection.toolingexecute("sobjects/SandboxInfo",'POST', sandbox_definition)
     logging.info('Sandbox creation has been initiated.')
 
 
-def refresh_sandbox(sandbox_id, sandbox_data, salesforce_connection):
+def refresh_sandbox(sandbox_id, sandbox_definition, salesforce_connection):
     """
         Refresh a sandbox
     """
     logging.info('Refreshing an existing sandbox')
-    salesforce_connection.toolingexecute(f'sobjects/SandboxInfo/{sandbox_id}', 'PATCH', sandbox_data)
+    salesforce_connection.toolingexecute(f'sobjects/SandboxInfo/{sandbox_id}', 'PATCH', sandbox_definition)
     logging.info('Sandbox refresh has been initiated.')
 
 
-def main(alias, sandbox_name):
+def main(alias, sandbox_name, license_type, class_id, group_id):
     """
     Main function
     """
@@ -53,13 +57,20 @@ def main(alias, sandbox_name):
 
     sf = sandbox_functions.get_salesforce_connection(alias)
 
-    # Update Public Group and Apex Class ID for your org
-    sandbox_data = {
-        'LicenseType': 'DEVELOPER',
+    # Initialize the sandbox definition dictionary
+    sandbox_definition = {
+        'LicenseType': license_type,
         'SandboxName': sandbox_name,
-        'ActivationUserGroupId': '00G5a000003ji0R',
-        'ApexClassId': '01p5a000007t7Yx'
+        'AutoActivate': True
     }
+
+    # Check if class_id is not None and add it to the dictionary
+    if class_id is not None:
+        sandbox_definition['ApexClassID'] = class_id
+
+    # Check if group_id is not None and add it to the dictionary
+    if group_id is not None:
+        sandbox_definition['ActivationUserGroupId'] = group_id
 
     # Check if the provided sandbox name exists
     query_data = sf.toolingexecute(f"query?q=SELECT+StartDate,SandboxName,SandboxInfoId,Status+FROM+SandboxProcess+WHERE+SandboxName+=+'{sandbox_name}'",'GET')
@@ -67,26 +78,23 @@ def main(alias, sandbox_name):
 
     # Create sandbox if sandbox records exist, but the sandbox was deleted in the org
     if all(record.get('Status') in {'Deleted', 'Deleting'} for record in records):
-        create_sandbox(sandbox_name, sandbox_data, sf)
+        create_sandbox(sandbox_name, sandbox_definition, sf)
         return
 
     # Refresh the sandbox if records exist
     if records:
         sandbox_id, elgible_sandbox_info = sandbox_functions.find_eligible_sandbox(records)
         if elgible_sandbox_info:
-            activate = {
-                'AutoActivate': True
-            }
-            sandbox_data.update(activate)
-            refresh_sandbox(sandbox_id, sandbox_data, sf)
+            refresh_sandbox(sandbox_id, sandbox_definition, sf)
         else:
             logging.info('ERROR: Sandbox %s is not eligible for a sandbox refresh', sandbox_name)
             logging.info('The sandbox was created or refreshed within the past day.')
             sys.exit(1)
     else:
-        create_sandbox(sandbox_name, sandbox_data, sf)
+        create_sandbox(sandbox_name, sandbox_definition, sf)
 
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.alias, inputs.sandbox)
+    main(inputs.alias, inputs.sandbox,
+         inputs.license, inputs.class_id, inputs.group)

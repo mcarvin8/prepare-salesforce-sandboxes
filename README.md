@@ -12,41 +12,43 @@ The below sandbox Python scripts require the Production Alias used when authenti
 You can use the provided SFDX authenticate script with the Force Auth URL and the desired alias.
 
 ```
-python ./authenticate_sfdx.py --alias PRODUCTION --url $PRODUCTION_AUTH_URL
+USAGE
+  $ python ./authenticate_sfdx.py --alias "PRODUCTION" --url $PRODUCTION_AUTH_URL
+
+FLAGS
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -u, --url=<value>  Production Force Auth URL.
+
 ```
 
 ## Create and Refresh Sandboxes
+
 ```
-python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+USAGE
+  $ python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP]
+
+FLAGS
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -s, --sandbox=<value>  Name of the sandbox to create or refresh.
+  -l, --license=<value>  License type to create/refresh the sandbox as. Valid options are {Developer,Developer_Pro,Partial,Full}.
+  -c, --class=<value>  [OPTIONAL] Apex Class ID to run post sandbox activation.
+  -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox acess.
+
 ```
+
 
 The above script either creates a new sandbox or refreshes an existing sandbox. Sandbox refreshes will auto-activate, so you will not be able to revert the sandbox once this script runs.
 
-List protected sandboxes here if you wish to prevent a sandbox from being refreshed this way.
+Update the script to list protected branches here if you wish to prevent a sandbox from being refreshed this way.
 ``` python
 DO_NOT_REFRESH = ['FullQA', 'dev']
 ```
 
-The `sandbox_data` dictionary below is similar to a Sandbox Definition File:
-- LicenseType = License for the sandbox (Developer, Developer Pro, Full Copy)
-- ActivationUserGroupId = ID of the Public Group (https://help.salesforce.com/s/articleView?id=sf.ls_create_public_groups.htm&type=5)
-- ApexClassId = ID of the Apex Class to run in the sandbox post activation
-
-``` python
-    # Update Public Group and Apex Class ID for your org
-    sandbox_data = {
-        'LicenseType': 'DEVELOPER',
-        'SandboxName': sandbox_name,
-        'ActivationUserGroupId': '00G5a000003ji0R',
-        'ApexClassId': '01p5a000007t7Yx'
-    }
-```
-
 ### Apex Class
 
-To use the Apex Class in sandbox creations and refreshes, the class must first be deployed to your Production org.
+The `force-app\main\default\classes\PrepareMySandbox.cls` apex class in this project will update all users in the Public Group to the desired profile and reset their passwords. 
 
-The `PrepareMySandbox` apex class will update all users in the Public Group to the desired profile and reset their passwords. 
+To use this Apex Class in sandbox creations and refreshes, the class must first be deployed to your Production org.
 
 Update the Profile ID and public group ID in the class and test class before deploying to your org. Also update the test class users' email for your org.
 
@@ -55,11 +57,18 @@ All users in the public group will receive a password reset email once the sandb
 If you don't want to use this Apex Class, remove the `ApexClassId` line from `create_sandbox.py`.
 
 ## Delete Sandboxes
+
 ```
-python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+USAGE
+  $ python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+
+FLAGS
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -s, --sandbox=<value>  Name of the sandbox to delete.
+
 ```
 
-This script will delete sandboxes assuming the sandbox meets deletion criteria (cannot be created or refreshes within the past day).
+This script will delete sandboxes assuming the sandbox meets deletion criteria.
 
 List protected sandboxes here if you wish to prevent a sandbox from being deleted this way:
 ``` python
@@ -67,8 +76,15 @@ DO_NOT_DELETE = ['FullQA', 'dev']
 ```
 
 ## Query Sandboxes
+
 ```
-python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+USAGE
+  $ python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+
+FLAGS
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -s, --sandbox=<value>  Name of the sandbox to query.
+
 ```
 
 This script can be used to check the current sandbox status. 

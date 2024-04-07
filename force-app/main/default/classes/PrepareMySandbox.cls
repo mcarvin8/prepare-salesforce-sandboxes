@@ -53,13 +53,17 @@ global class PrepareMySandbox implements SandboxPostCopy {
                 userIds.add(userOrGroupId);
             }
         }
-    
+
         // Query and update active User profiles
-        for (User user : [SELECT Id, ProfileId FROM User WHERE Id IN :userIds AND IsActive = true]) {
+        for (User user : [SELECT Id, ProfileId, Email FROM User WHERE Id IN :userIds AND IsActive = true]) {
             user.ProfileId = newProfileId;
+            // Remove .invalid from email address
+            if (user.Email != null && user.Email.contains('.invalid')) {
+                user.Email = user.Email.replace('.invalid', '');
+            }
             usersToUpdate.add(user);
         }
-    
+
         return usersToUpdate;
     }
 

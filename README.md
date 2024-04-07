@@ -56,6 +56,8 @@ All users in the public group will receive a password reset email once the sandb
 
 If you don't want to use this Apex Class, remove the `ApexClassId` line from `create_sandbox.py`.
 
+Due to a [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes, the Apex Class has been modified to remove `.invalid` from user emails in the public group. This will trigger an email address confirmation change email instead of a password reset email. Users will need to manually reset their passwords in the sandbox from the [Sandbox Login](https://test.salesforce.com/) page after they confirm their email adddresses.  This can be removed once Public Groups are restored in the Sandbox UI.
+
 ## Delete Sandboxes
 
 ```

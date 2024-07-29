@@ -109,10 +109,10 @@ When the sandbox is ready for use, the status will be `Completed`.
 Sample CI/CD workflows for GitHub and GitLab have been included. For other CI/CD platforms, please ensure the container used contains Python and the simple salesforce library. The scripts themselves require no updates for other platforms.
 
 For GitLab (`.gitlab-ci.yml`):
+- Add the `PRODUCTION_AUTH_URL` variable in your repo CI/CD variables.
 - The pipeline source is web. Go to CI/CD → Pipelines and click the 'Run Pipeline' button.
     - Add the `SANDBOX` variable with the sandbox name.
     - Add the `LICENSE` variable with one of the valid license types (Developer,Developer_Pro,Partial,Full).
-    - Add the `PRODUCTION_AUTH_URL` variable in your repo CI/CD variables.
     - Optionally, add the `CLASS` variable with the Apex Class ID.
     - Optionally, add the `GROUP` variable with the Public Group ID.
     - Press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.

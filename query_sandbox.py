@@ -6,7 +6,6 @@ import logging
 import sys
 
 import get_salesforce_connection
-import sandbox_functions
 
 # Format logging message
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)

@@ -33,16 +33,16 @@ def create_sandbox(sandbox_name, sandbox_definition, salesforce_connection):
     """
         Create a sandbox
     """
-    logging.info('Creating a new sandbox %s', sandbox_name)
+    logging.info('Creating a new sandbox: %s', sandbox_name)
     salesforce_connection.toolingexecute("sobjects/SandboxInfo",'POST', sandbox_definition)
     logging.info('Sandbox creation has been initiated.')
 
 
-def refresh_sandbox(sandbox_id, sandbox_definition, salesforce_connection):
+def refresh_sandbox(sandbox_name, sandbox_id, sandbox_definition, salesforce_connection):
     """
         Refresh a sandbox
     """
-    logging.info('Refreshing an existing sandbox')
+    logging.info('Refreshing an existing sandbox: %s', sandbox_name)
     salesforce_connection.toolingexecute(f'sobjects/SandboxInfo/{sandbox_id}', 'PATCH', sandbox_definition)
     logging.info('Sandbox refresh has been initiated.')
 
@@ -52,7 +52,7 @@ def main(alias, sandbox_name, license_type, class_id, group_id):
     Main function
     """
     if sandbox_name in DO_NOT_REFRESH:
-        logging.info('ERROR: The sandbox `%s` is in the DO NOT REFRESH list', sandbox_name)
+        logging.error('The sandbox is in the DO NOT REFRESH list: %s', sandbox_name)
         sys.exit(1)
 
     sf = sandbox_functions.get_salesforce_connection(alias)
@@ -85,10 +85,10 @@ def main(alias, sandbox_name, license_type, class_id, group_id):
     if records:
         sandbox_id, elgible_sandbox_info = sandbox_functions.find_eligible_sandbox(records)
         if elgible_sandbox_info:
-            refresh_sandbox(sandbox_id, sandbox_definition, sf)
+            refresh_sandbox(sandbox_name, sandbox_id, sandbox_definition, sf)
         else:
-            logging.info('ERROR: Sandbox %s is not eligible for a sandbox refresh', sandbox_name)
-            logging.info('The sandbox was created or refreshed within the past day.')
+            logging.error('ERROR: Sandbox %s is not eligible for a sandbox refresh', sandbox_name)
+            logging.error('The sandbox was created or refreshed within the past day.')
             sys.exit(1)
     else:
         create_sandbox(sandbox_name, sandbox_definition, sf)

@@ -19,12 +19,12 @@ createAndRefreshSandbox:
   extends: .salesforce-container
   stage: sandbox
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_PIPELINE_SOURCE == 'web' && $SANDBOX && $LICENSE
       when: always
     - when: never
   allow_failure: false
   script:
-    - python ./scripts/python/create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL 
+    - python ./scripts/python/create_sandbox.py --sandbox "$SANDBOX" --license "$LICENSE" --class "$CLASS" --group "$GROUP" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2
 
@@ -32,7 +32,7 @@ querySandbox:
   extends: .salesforce-container
   stage: sandbox
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_PIPELINE_SOURCE == 'web' && $SANDBOX
       when: manual
     - when: never
   allow_failure: false
@@ -45,7 +45,7 @@ deleteSandbox:
   extends: .salesforce-container
   stage: sandbox
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_PIPELINE_SOURCE == 'web' && $SANDBOX
       when: manual
     - when: never
   allow_failure: false

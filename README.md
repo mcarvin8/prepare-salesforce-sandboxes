@@ -1,9 +1,9 @@
-# Prepare Sandboxes
+# Prepare Salesforce Sandboxes
 Python scripts which uses Simple Salesforce to create, refresh, and delete sandboxes.
 
 The environment requires Python 3 and the Salesforce CLI (`sf`).
 
-This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
+> This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
 
 ## Authenticate to Production using the Salesforce CLI
 
@@ -12,7 +12,7 @@ You can authenticate to your Production org in 1 of 2 ways using the Salesforce 
 1. Authenticate using an existing alias
 2. Authenticate using a Force Auth URL
 
-Please ensure you only use one of the 2 flags for authentication. If you provide both, it will default to alias first.
+> Please ensure you only use one of the 2 flags for authentication. If you provide both, it will default to alias first.
 
 ### Using an Alias
 
@@ -47,7 +47,7 @@ FLAGS
   -s, --sandbox=<value>  Name of the sandbox to create or refresh.
   -l, --license=<value>  License type to create/refresh the sandbox as. Valid options are {Developer,Developer_Pro,Partial,Full}.
   -c, --class=<value>  [OPTIONAL] Apex Class ID to run post sandbox activation.
-  -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox acess.
+  -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox access.
   -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
 ```
 
@@ -60,7 +60,7 @@ DO_NOT_REFRESH = ['FullQA', 'dev']
 
 ### Apex Class
 
-The `force-app\main\default\classes\PrepareMySandbox.cls` apex class in this project will update all users in the Public Group to the desired profile and reset their passwords. 
+The `force-app/main/default/classes/PrepareMySandbox.cls` apex class in this project will update all users in the Public Group to the desired profile and reset their passwords. 
 
 To use this Apex Class in sandbox creations and refreshes, the class must first be deployed to your Production org.
 
@@ -110,7 +110,13 @@ When the sandbox is ready for use, the status will be `Completed`.
 
 Sample CI/CD workflows for GitHub and GitLab have been included. For other CI/CD platforms, please ensure the container used contains Python and the simple salesforce library. The scripts themselves require no updates for other platforms.
 
-For GitLab (`.gitlab-ci.yml`), the pipeline source is `web` (CI/CD → Pipelines, click 'Run Pipeline' button). Add the `SANDBOX` variable with the sandbox name, then press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.
+For GitLab (`.gitlab-ci.yml`):
+- The pipeline source is web. Go to CI/CD → Pipelines and click the 'Run Pipeline' button.
+    - Add the `SANDBOX` variable with the sandbox name.
+    - Add the `LICENSE` variable with one of the valid license types (Developer,Developer_Pro,Partial,Full).
+    - Optionally, add the `CLASS` variable with the Apex Class ID.
+    - Optionally, add the `GROUP` variable with the Public Group ID.
+    - Press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.
 
 For GitHub:
 - All workflows will be manually triggered via workflow dispatch.

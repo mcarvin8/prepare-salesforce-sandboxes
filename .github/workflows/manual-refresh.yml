@@ -8,6 +8,23 @@ on:
         description: Name of the sandbox to create or refresh
         required: true
         type: string
+      license:
+        description: Sandbox License Type
+        required: true
+        type: choice
+        options:
+          - Developer
+          - Developer_Pro
+          - Partial
+          - Full
+      class:
+        description: Apex Class ID to run during sandbox activation.
+        required: false
+        type: string
+      group:
+        description: Public Group ID to assign sandbox access.
+        required: false
+        type: string
 
 jobs:
   refresh:
@@ -39,5 +56,8 @@ jobs:
         env:
           PRODUCTION_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
           SANDBOX: ${{ github.event.inputs.sandbox }}
+          LICENSE: ${{ github.event.inputs.license }}
+          CLASS: ${{ github.event.inputs.class }}
+          GROUP: ${{ github.event.inputs.group }}
         run: |
-          python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
+          python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL --license "$LICENSE" --class "$CLASS" --group "$GROUP"

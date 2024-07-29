@@ -1,8 +1,6 @@
 stages: 
   - sandbox
 
-# Update to install the desired version of the Salesforce CLI
-# on your preferred docker container
 .salesforce-container:
   image: ubuntu:latest
   before_script:
@@ -26,7 +24,7 @@ createAndRefreshSandbox:
     - when: never
   allow_failure: false
   script:
-    - python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL 
+    - python ./scripts/python/create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL 
   tags: 
     - aws,prd,us-west-2
 
@@ -39,7 +37,7 @@ querySandbox:
     - when: never
   allow_failure: false
   script:
-    - python ./query_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
+    - python ./scripts/python/query_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2
 
@@ -52,6 +50,6 @@ deleteSandbox:
     - when: never
   allow_failure: false
   script:
-    - python ./delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
+    - python ./scripts/python/delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2

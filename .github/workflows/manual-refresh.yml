@@ -60,4 +60,4 @@ jobs:
           CLASS: ${{ github.event.inputs.class }}
           GROUP: ${{ github.event.inputs.group }}
         run: |
-          python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL --license "$LICENSE" --class "$CLASS" --group "$GROUP"
+          python ./scripts/python/create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL --license "$LICENSE" --class "$CLASS" --group "$GROUP"

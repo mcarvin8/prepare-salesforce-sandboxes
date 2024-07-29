@@ -40,4 +40,4 @@ jobs:
           PRODUCTION_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
           SANDBOX: ${{ github.event.inputs.sandbox }}
         run: |
-          python ./delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
+          python ./scripts/python/delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL

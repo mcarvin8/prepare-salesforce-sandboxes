@@ -34,4 +34,4 @@ jobs:
         env:
           PRODUCTION_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
         run: |
-          python ./query_stale_sandboxes.py --url $PRODUCTION_AUTH_URL
+          python ./scripts/python/query_stale_sandboxes.py --url $PRODUCTION_AUTH_URL

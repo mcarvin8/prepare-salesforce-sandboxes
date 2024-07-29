@@ -27,11 +27,11 @@ def parse_args():
     return args
 
 
-def delete_sandbox(sandbox_id, salesforce_connection):
+def delete_sandbox(sandbox_name, sandbox_id, salesforce_connection):
     """
         Delete a sandbox
     """
-    logging.info('Deleting the existing sandbox')
+    logging.info('Deleting the existing sandbox: %s', sandbox_name)
     salesforce_connection.toolingexecute(f'sobjects/SandboxInfo/{sandbox_id}', 'DELETE')
     logging.info('Sandbox deletion has been initiated.')
 
@@ -41,7 +41,7 @@ def main(alias, sandbox_name, url):
     Main function
     """
     if sandbox_name in DO_NOT_DELETE:
-        logging.info('ERROR: The sandbox `%s` is in the DO NOT DELETE list', sandbox_name)
+        logging.error('ERROR: The sandbox is in the DO NOT DELETE list: %s', sandbox_name)
         sys.exit(1)
 
     if alias:
@@ -49,7 +49,7 @@ def main(alias, sandbox_name, url):
     elif url:
         sf = get_salesforce_connection.get_salesforce_connection_url(url)
     else:
-        logging.error('The Salesforce Production alias or URL was not provided for authentication.')
+        logging.error('ERROR: The Salesforce Production alias or URL was not provided for authentication.')
         logging.error('Please provide `--alias` or `--url` flag and try again.')
         sys.exit(1)
 
@@ -59,16 +59,16 @@ def main(alias, sandbox_name, url):
 
     # Exit if sandbox records exist, but the sandbox is already deleted in the org
     if all(record.get('Status') in {'Deleted', 'Deleting'} for record in records):
-        logging.info('ERROR: The sandbox has already been deleted in the Org.')
+        logging.error('ERROR: The sandbox has already been deleted in the Org: %s', sandbox_name)
         sys.exit(1)
 
     if records:
         sandbox_id, elgible_sandbox_info = sandbox_functions.find_eligible_sandbox(records)
         if elgible_sandbox_info:
-            delete_sandbox(sandbox_id, sf)
+            delete_sandbox(sandbox_name, sandbox_id, sf)
         else:
-            logging.info('ERROR: Sandbox %s is not eligible for a sandbox deletion.', sandbox_name)
-            logging.info('The sandbox was recently refreshed or created within the past day.')
+            logging.error('ERROR: Sandbox %s is not eligible for a sandbox deletion.', sandbox_name)
+            logging.error('The sandbox was recently refreshed or created within the past day.')
             sys.exit(1)
     else:
         logging.info('ERROR: A sandbox with the name `%s` could not be found in the Org.', sandbox_name)

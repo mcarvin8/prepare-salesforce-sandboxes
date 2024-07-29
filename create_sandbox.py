@@ -62,7 +62,7 @@ def main(alias, sandbox_name, license_type, class_id, group_id, url):
     elif url:
         sf = get_salesforce_connection.get_salesforce_connection_url(url)
     else:
-        logging.error('The Salesforce Production alias or URL was not provided for authentication.')
+        logging.error('ERROR: The Salesforce Production alias or URL was not provided for authentication.')
         logging.error('Please provide `--alias` or `--url` flag and try again.')
         sys.exit(1)
 

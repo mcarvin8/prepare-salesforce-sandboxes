@@ -31,8 +31,9 @@ def get_salesforce_connection(alias):
 
     access_token = sfdx_info['result']['accessToken']
     instance_url = sfdx_info['result']['instanceUrl']
+    api_version = sfdx_info['result']['apiVersion']
 
-    return Salesforce(instance_url=instance_url,session_id=access_token,domain=domain)
+    return Salesforce(instance_url=instance_url,session_id=access_token,domain=domain,version=api_version)
 
 def is_sandbox_eligible(start_date):
     """

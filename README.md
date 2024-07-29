@@ -22,7 +22,7 @@ Optionally, you can use the included SFDX authenticate script with the Force Aut
 
 ```
 USAGE
-  $ python ./authenticate_sfdx.py --alias "PRODUCTION" --url $PRODUCTION_AUTH_URL
+  $ python ./scripts/python/authenticate_sfdx.py --alias "PRODUCTION" --url $PRODUCTION_AUTH_URL
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
@@ -40,7 +40,7 @@ You must provide the sandbox script with the `--url` flag.
 
 ```
 USAGE
-  $ python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP] [--url $FORCE_AUTH_URL]
+  $ python ./scripts/python/create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP] [--url $FORCE_AUTH_URL]
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
@@ -75,7 +75,7 @@ If you don't want to use this Apex Class, remove the `ApexClassId` line from `cr
 
 ```
 USAGE
-  $ python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
+  $ python ./scripts/python/delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
@@ -94,7 +94,7 @@ DO_NOT_DELETE = ['FullQA', 'dev']
 
 ```
 USAGE
-  $ python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
+  $ python ./scripts/python/query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.

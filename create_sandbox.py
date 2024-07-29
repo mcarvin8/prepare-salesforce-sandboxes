@@ -74,11 +74,11 @@ def main(alias, sandbox_name, license_type, class_id, group_id, url):
     }
 
     # Check if class_id is not None and add it to the dictionary
-    if class_id is not None:
+    if class_id is not None and class_id != '':
         sandbox_definition['ApexClassID'] = class_id
 
     # Check if group_id is not None and add it to the dictionary
-    if group_id is not None:
+    if group_id is not None and group_id != '':
         sandbox_definition['ActivationUserGroupId'] = group_id
 
     # Check if the provided sandbox name exists

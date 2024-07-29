@@ -21,6 +21,8 @@ FLAGS
 
 ```
 
+This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
+
 ## Create and Refresh Sandboxes
 
 ```
@@ -33,7 +35,6 @@ FLAGS
   -l, --license=<value>  License type to create/refresh the sandbox as. Valid options are {Developer,Developer_Pro,Partial,Full}.
   -c, --class=<value>  [OPTIONAL] Apex Class ID to run post sandbox activation.
   -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox acess.
-
 ```
 
 
@@ -56,7 +57,6 @@ All users in the public group will receive a password reset email once the sandb
 
 If you don't want to use this Apex Class, remove the `ApexClassId` line from `create_sandbox.py`.
 
-This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API.
 
 ## Delete Sandboxes
 

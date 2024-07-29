@@ -24,7 +24,7 @@ createAndRefreshSandbox:
     - if: $CI_PIPELINE_SOURCE == 'web'
       when: always
     - when: never
-  allow_failure: true
+  allow_failure: false
   script:
     - python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL 
   tags: 
@@ -37,7 +37,7 @@ querySandbox:
     - if: $CI_PIPELINE_SOURCE == 'web'
       when: manual
     - when: never
-  allow_failure: true
+  allow_failure: false
   script:
     - python ./query_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
@@ -50,7 +50,7 @@ deleteSandbox:
     - if: $CI_PIPELINE_SOURCE == 'web'
       when: manual
     - when: never
-  allow_failure: true
+  allow_failure: false
   script:
     - python ./delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 

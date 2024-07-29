@@ -12,7 +12,6 @@ stages:
     - apt-get install -y nodejs
     - npm install --global @salesforce/cli@latest
     - sf version --verbose --json
-    - python3 ./authenticate_sfdx.py --alias PRODUCTION --url $PRODUCTION_AUTH_URL
     - python3 -m venv "venv"
     - source venv/bin/activate
     - pip install --upgrade pip
@@ -27,7 +26,7 @@ createAndRefreshSandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+    - python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL 
   tags: 
     - aws,prd,us-west-2
 
@@ -40,7 +39,7 @@ querySandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+    - python ./query_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2
 
@@ -53,6 +52,6 @@ deleteSandbox:
     - when: never
   allow_failure: true
   script:
-    - python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+    - python ./delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2

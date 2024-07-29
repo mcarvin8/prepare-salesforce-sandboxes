@@ -5,6 +5,7 @@ import argparse
 import logging
 import sys
 
+import get_salesforce_connection
 import sandbox_functions
 
 # Format logging message
@@ -16,17 +17,25 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to post the sandbox status.')
-    parser.add_argument('-a', '--alias')
-    parser.add_argument('-s', '--sandbox', help='Name of the sandbox to query')
+    parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=False)
+    parser.add_argument('-s', '--sandbox', help='Name of the sandbox to query', required=True)
+    parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
     args = parser.parse_args()
     return args
 
 
-def main(alias, sandbox_name):
+def main(alias, sandbox_name, url):
     """
     Main function
     """
-    sf = sandbox_functions.get_salesforce_connection(alias)
+    if alias:
+        sf = get_salesforce_connection.get_salesforce_connection_alias(alias)
+    elif url:
+        sf = get_salesforce_connection.get_salesforce_connection_url(url)
+    else:
+        logging.error('The Salesforce Production alias or URL was not provided for authentication.')
+        logging.error('Please provide `--alias` or `--url` flag and try again.')
+        sys.exit(1)
 
     # Check if the provided sandbox name exists
     query_data = sf.toolingexecute(f"query?q=SELECT+StartDate,SandboxName,Status+FROM+SandboxProcess+WHERE+SandboxName+=+'{sandbox_name}'",'GET')
@@ -58,4 +67,4 @@ def main(alias, sandbox_name):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.alias, inputs.sandbox)
+    main(inputs.alias, inputs.sandbox, inputs.url)

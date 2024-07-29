@@ -3,13 +3,22 @@ Python scripts which uses Simple Salesforce to create, refresh, and delete sandb
 
 The environment requires Python 3 and the Salesforce CLI (`sf`).
 
+This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
+
 ## Authenticate to Production using the Salesforce CLI
 
-You must first authenticate to your production org using the Salesforce CLI.
+You can authenticate to your Production org in 1 of 2 ways using the Salesforce CLI.
 
-The below sandbox Python scripts require the Production Alias used when authenticating.
+1. Authenticate using an existing alias
+2. Authenticate using a Force Auth URL
 
-You can use the provided SFDX authenticate script with the Force Auth URL and the desired alias.
+Please ensure you only use one of the 2 flags for authentication. If you provide both, it will default to alias first.
+
+### Using an Alias
+
+To authenticate with an existing alias, you must provide the sandbox script with the `--alias` flag.
+
+Optionally, you can use the included SFDX authenticate script with the Force Auth URL and the desired alias.
 
 ```
 USAGE
@@ -18,25 +27,29 @@ USAGE
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
   -u, --url=<value>  Production Force Auth URL.
-
 ```
 
-This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
+### Using a Force Auth URL
+
+To authenticate directly with a Force Auth URL, you must at least have Salesforce CLI 2.24.4 or newer installed.
+
+You must provide the sandbox script with the `--url` flag.
+
 
 ## Create and Refresh Sandboxes
 
 ```
 USAGE
-  $ python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP]
+  $ python ./create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP] [--url $FORCE_AUTH_URL]
 
 FLAGS
-  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
   -s, --sandbox=<value>  Name of the sandbox to create or refresh.
   -l, --license=<value>  License type to create/refresh the sandbox as. Valid options are {Developer,Developer_Pro,Partial,Full}.
   -c, --class=<value>  [OPTIONAL] Apex Class ID to run post sandbox activation.
   -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox acess.
+  -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
 ```
-
 
 The above script either creates a new sandbox or refreshes an existing sandbox. Sandbox refreshes will auto-activate, so you will not be able to revert the sandbox once this script runs.
 
@@ -62,12 +75,12 @@ If you don't want to use this Apex Class, remove the `ApexClassId` line from `cr
 
 ```
 USAGE
-  $ python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+  $ python ./delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
 
 FLAGS
-  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
   -s, --sandbox=<value>  Name of the sandbox to delete.
-
+  -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
 ```
 
 This script will delete sandboxes assuming the sandbox meets deletion criteria.
@@ -81,12 +94,12 @@ DO_NOT_DELETE = ['FullQA', 'dev']
 
 ```
 USAGE
-  $ python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX"
+  $ python ./query_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
 
 FLAGS
-  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
+  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
   -s, --sandbox=<value>  Name of the sandbox to query.
-
+  -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
 ```
 
 This script can be used to check the current sandbox status. 

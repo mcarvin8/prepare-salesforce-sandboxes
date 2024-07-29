@@ -1,11 +1,8 @@
 """
-    Functions used to create, refresh, delete sandboxes.
+    Functions used to determine eligible sandbox.
 """
 import datetime
-import json
 import re
-import subprocess
-from simple_salesforce import Salesforce
 
 def parse_iso_datetime(datetime_str):
     """
@@ -17,23 +14,6 @@ def parse_iso_datetime(datetime_str):
         datetime_without_milliseconds = match.group(1)
         return datetime.datetime.fromisoformat(datetime_without_milliseconds)
     return None
-
-def get_salesforce_connection(alias):
-    """
-        Connect to Salesforce using the Salesforce CLI and Simple Salesforce
-    """
-    # production domain = 'login'
-    # sandbox domain = 'test'
-    domain = 'login'
-    sfdx_cmd = subprocess.Popen(f'sf org display --target-org {alias} --json',
-                                shell=True,stdout=subprocess.PIPE)
-    sfdx_info = json.loads(sfdx_cmd.communicate()[0])
-
-    access_token = sfdx_info['result']['accessToken']
-    instance_url = sfdx_info['result']['instanceUrl']
-    api_version = sfdx_info['result']['apiVersion']
-
-    return Salesforce(instance_url=instance_url,session_id=access_token,domain=domain,version=api_version)
 
 def is_sandbox_eligible(start_date):
     """

@@ -5,6 +5,7 @@ import argparse
 import logging
 import sys
 
+import get_salesforce_connection
 import sandbox_functions
 
 # Format logging message
@@ -19,12 +20,13 @@ def parse_args():
     Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='A script to create or refresh a sandbox.')
-    parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=True)
+    parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=False)
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to create or refresh', required=True)
     parser.add_argument('-l', '--license', help='Type of license for the sandbox (`Developer`, `Developer_Pro`, `Partial`, `Full`)',
                         choices=['Developer', 'Developer_Pro', 'Partial', 'Full'], required=True)
-    parser.add_argument('-c', '--class',  dest='class_id', help='Apex Class ID to run post sandbox activation')
-    parser.add_argument('-g', '--group', help='Public Group ID to provide access to sandbox')
+    parser.add_argument('-c', '--class',  dest='class_id', help='Apex Class ID to run post sandbox activation', required=False)
+    parser.add_argument('-g', '--group', help='Public Group ID to provide access to sandbox', required=False)
+    parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
     args = parser.parse_args()
     return args
 
@@ -47,7 +49,7 @@ def refresh_sandbox(sandbox_name, sandbox_id, sandbox_definition, salesforce_con
     logging.info('Sandbox refresh has been initiated.')
 
 
-def main(alias, sandbox_name, license_type, class_id, group_id):
+def main(alias, sandbox_name, license_type, class_id, group_id, url):
     """
     Main function
     """
@@ -55,7 +57,14 @@ def main(alias, sandbox_name, license_type, class_id, group_id):
         logging.error('The sandbox is in the DO NOT REFRESH list: %s', sandbox_name)
         sys.exit(1)
 
-    sf = sandbox_functions.get_salesforce_connection(alias)
+    if alias:
+        sf = get_salesforce_connection.get_salesforce_connection_alias(alias)
+    elif url:
+        sf = get_salesforce_connection.get_salesforce_connection_url(url)
+    else:
+        logging.error('The Salesforce Production alias or URL was not provided for authentication.')
+        logging.error('Please provide `--alias` or `--url` flag and try again.')
+        sys.exit(1)
 
     # Initialize the sandbox definition dictionary
     sandbox_definition = {
@@ -97,4 +106,5 @@ def main(alias, sandbox_name, license_type, class_id, group_id):
 if __name__ == '__main__':
     inputs = parse_args()
     main(inputs.alias, inputs.sandbox,
-         inputs.license, inputs.class_id, inputs.group)
+         inputs.license, inputs.class_id, inputs.group,
+         inputs.url)

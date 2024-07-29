@@ -106,8 +106,10 @@ This script can be used to check the current sandbox status.
 
 When the sandbox is ready for use, the status will be `Completed`.
 
-## CI/CD Example
+## CI/CD Examples
 
-A sample GitLab CI/CD config file has been included. For other CI/CD platforms, please ensure the container used contains Python and the simple salesforce library. The scripts themselves require no updates for other platforms.
+Sample CI/CD workflows for GitHub and GitLab have been included. For other CI/CD platforms, please ensure the container used contains Python and the simple salesforce library. The scripts themselves require no updates for other platforms.
 
-For GitLab, the pipeline source is `web` (CI/CD → Pipelines, click 'Run Pipeline' button). Add the `SANDBOX` variable with the sandbox name, then press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.
+For GitLab (`.gitlab-ci.yml`), the pipeline source is `web` (CI/CD → Pipelines, click 'Run Pipeline' button). Add the `SANDBOX` variable with the sandbox name, then press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.
+
+For GitHub, the `Create/Refresh Sandbox` workflow is manual and requires a `sandbox` input with the name of the sandbox. The `PRODUCTION_AUTH_URL` should be defined in the repo secrets.

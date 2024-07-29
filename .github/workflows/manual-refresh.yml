@@ -1,0 +1,43 @@
+---
+name: Create/Refresh Sandbox
+
+on:
+  workflow_dispatch:
+    inputs:
+      sandbox:
+        description: Name of the sandbox to create or refresh
+        required: true
+        type: string
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Salesforce CLI and Simple Salesforce
+        run: |
+          apt-get update
+          apt-get install -y python3-venv python3 ca-certificates curl gnupg
+          curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+          apt-get install -y nodejs
+          npm install --global @salesforce/cli@latest
+          sf version --verbose --json
+          python3 -m venv "venv"
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install simple-salesforce
+
+      - name: Create or refresh the Sandbox
+        env:
+          PRODUCTION_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
+          SANDBOX: ${{ github.event.inputs.sandbox }}
+        run: |
+          python ./create_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL

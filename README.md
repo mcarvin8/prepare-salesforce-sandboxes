@@ -112,4 +112,4 @@ Sample CI/CD workflows for GitHub and GitLab have been included. For other CI/CD
 
 For GitLab (`.gitlab-ci.yml`), the pipeline source is `web` (CI/CD → Pipelines, click 'Run Pipeline' button). Add the `SANDBOX` variable with the sandbox name, then press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.
 
-For GitHub, the `Create/Refresh Sandbox`, `Delete Sandbox`, and `Check Sandbox Status` workflows are manual and requires a `sandbox` input with the name of the sandbox. The `PRODUCTION_AUTH_URL` should be defined in your repo secrets.
+For GitHub, the `Create/Refresh Sandbox`, `Delete Sandbox`, and `Check Sandbox Status` workflows are manual and requires a `sandbox` input with the name of the sandbox. The `PRODUCTION_AUTH_URL` should be defined in your repo secrets. The `Check Stale Sandboxes` workflow is manual and only requires the `PRODUCTION_AUTH_URL` defined in your repo secrets.

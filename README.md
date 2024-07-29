@@ -18,7 +18,7 @@ You can authenticate to your Production org in 1 of 2 ways using the Salesforce 
 
 To authenticate with an existing alias, you must provide the sandbox script with the `--alias` flag.
 
-Optionally, you can use the included SFDX authenticate script with the Force Auth URL and the desired alias.
+Optionally, you can run the included SFDX authenticate script with the Force Auth URL and the desired alias before you run the sandbox scripts.
 
 ```
 USAGE
@@ -34,7 +34,6 @@ FLAGS
 To authenticate directly with a Force Auth URL, you must at least have Salesforce CLI 2.24.4 or newer installed.
 
 You must provide the sandbox script with the `--url` flag.
-
 
 ## Create and Refresh Sandboxes
 
@@ -69,7 +68,6 @@ Update the Profile ID and public group ID in the class and test class before dep
 All users in the public group will receive a password reset email once the sandbox is ready.
 
 If you don't want to use this Apex Class, remove the `ApexClassId` line from `create_sandbox.py`.
-
 
 ## Delete Sandboxes
 
@@ -114,6 +112,7 @@ For GitLab (`.gitlab-ci.yml`):
 - The pipeline source is web. Go to CI/CD → Pipelines and click the 'Run Pipeline' button.
     - Add the `SANDBOX` variable with the sandbox name.
     - Add the `LICENSE` variable with one of the valid license types (Developer,Developer_Pro,Partial,Full).
+    - Add the `PRODUCTION_AUTH_URL` variable in your repo CI/CD variables.
     - Optionally, add the `CLASS` variable with the Apex Class ID.
     - Optionally, add the `GROUP` variable with the Public Group ID.
     - Press `Run pipeline`. The create/refresh job will run automatically. The query and delete jobs will be manually triggered.

@@ -25,9 +25,7 @@ jobs:
       - name: Install Salesforce CLI and Simple Salesforce
         run: |
           apt-get update
-          apt-get install -y python3-venv python3 ca-certificates curl gnupg
-          curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-          apt-get install -y nodejs
+          apt-get install -y python3-venv python3
           npm install --global @salesforce/cli@latest
           sf version --verbose --json
           python3 -m venv "venv"

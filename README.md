@@ -67,8 +67,6 @@ Update the Profile ID and public group ID in the class and test class before dep
 
 All users in the public group will receive a password reset email once the sandbox is ready.
 
-If you don't want to use this Apex Class, remove the `ApexClassId` line from `create_sandbox.py`.
-
 ## Delete Sandboxes
 
 ```

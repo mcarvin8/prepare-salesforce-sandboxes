@@ -2,6 +2,8 @@
     Functions used to determine eligible sandbox.
 """
 import datetime
+import logging
+import json
 import re
 
 def parse_iso_datetime(datetime_str):
@@ -51,3 +53,15 @@ def find_eligible_sandbox(records):
                 break
 
     return sandbox_id, elgible_sandbox_info
+
+def load_protected_sandboxes_json(file_path):
+    """
+    Load the list of sandboxes that should not be refreshed/deleted from a JSON file.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            return data.get('do_not_refresh', [])
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logging.warning('ERROR: Could not load the protected sandboxes list from %s: %s', file_path, e)
+        return None

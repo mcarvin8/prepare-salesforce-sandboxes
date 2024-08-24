@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=False)
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to delete', required=True)
     parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
+    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='.protectedsandboxes.json')
     args = parser.parse_args()
     return args
 
@@ -36,12 +37,13 @@ def delete_sandbox(sandbox_name, sandbox_id, salesforce_connection):
     logging.info('Sandbox deletion has been initiated.')
 
 
-def main(alias, sandbox_name, url):
+def main(alias, sandbox_name, url, protected_sandboxes_file):
     """
     Main function
     """
-    if sandbox_name in DO_NOT_DELETE:
-        logging.error('ERROR: The sandbox is in the DO NOT DELETE list: %s', sandbox_name)
+    protected_sandboxes_list = sandbox_functions.load_protected_sandboxes_json(protected_sandboxes_file)
+    if protected_sandboxes_list and (sandbox_name in protected_sandboxes_list):
+        logging.error('The sandbox is in the Protected Sandboxes JSON file: %s', sandbox_name)
         sys.exit(1)
 
     if alias:
@@ -77,4 +79,5 @@ def main(alias, sandbox_name, url):
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.alias, inputs.sandbox, inputs.url)
+    main(inputs.alias, inputs.sandbox, inputs.url,
+         inputs.json)

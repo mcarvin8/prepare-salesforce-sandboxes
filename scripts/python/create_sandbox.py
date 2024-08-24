@@ -11,9 +11,6 @@ import sandbox_functions
 # Format logging message
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
-# List sandboxes that shouldn't be refreshed this way
-DO_NOT_REFRESH = ['FullQA', 'dev']
-
 
 def parse_args():
     """
@@ -27,6 +24,7 @@ def parse_args():
     parser.add_argument('-c', '--class',  dest='class_id', help='Apex Class ID to run post sandbox activation', required=False)
     parser.add_argument('-g', '--group', help='Public Group ID to provide access to sandbox', required=False)
     parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
+    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='.protectedsandboxes.json')
     args = parser.parse_args()
     return args
 
@@ -49,12 +47,13 @@ def refresh_sandbox(sandbox_name, sandbox_id, sandbox_definition, salesforce_con
     logging.info('Sandbox refresh has been initiated.')
 
 
-def main(alias, sandbox_name, license_type, class_id, group_id, url):
+def main(alias, sandbox_name, license_type, class_id, group_id, url, protected_sandboxes_file):
     """
     Main function
     """
-    if sandbox_name in DO_NOT_REFRESH:
-        logging.error('The sandbox is in the DO NOT REFRESH list: %s', sandbox_name)
+    protected_sandboxes_list = sandbox_functions.load_protected_sandboxes_json(protected_sandboxes_file)
+    if protected_sandboxes_list and (sandbox_name in protected_sandboxes_list):
+        logging.error('The sandbox is in the Protected Sandboxes JSON file: %s', sandbox_name)
         sys.exit(1)
 
     if alias:
@@ -107,4 +106,4 @@ if __name__ == '__main__':
     inputs = parse_args()
     main(inputs.alias, inputs.sandbox,
          inputs.license, inputs.class_id, inputs.group,
-         inputs.url)
+         inputs.url, inputs.json)

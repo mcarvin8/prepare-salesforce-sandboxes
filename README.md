@@ -35,11 +35,23 @@ To authenticate directly with a Force Auth URL, you must at least have Salesforc
 
 You must provide the sandbox script with the `--url` flag.
 
+## Protected Sandboxes JSON file
+
+The create/refresh sandbox script and the delete sandbox script will process a JSON file containg protected sandboxes if the file is found. If a user attempts to refresh or delete a sandbox in the JSON file, the script will end with a failure.
+
+By default, the scripts will look for a JSON file named `.protectedsandboxes.json` in the running directory that follows this format:
+
+```json
+{
+    "do_not_refresh": ["FullQA", "dev"]
+}
+```
+
 ## Create and Refresh Sandboxes
 
 ```
 USAGE
-  $ python ./scripts/python/create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP] [--url $FORCE_AUTH_URL]
+  $ python ./scripts/python/create_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" --license {Developer,Developer_Pro,Partial,Full} [-c CLASS_VALUE] [-g GROUP] [--url $FORCE_AUTH_URL] [--json ".protectedsandboxes.json"]
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
@@ -48,14 +60,10 @@ FLAGS
   -c, --class=<value>  [OPTIONAL] Apex Class ID to run post sandbox activation.
   -g, --group=<value>  [OPTIONAL] Public Group ID (aka Activation User Group ID) to provide sandbox access.
   -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
+  -j, --json=<value> Path to the JSON file containing the protected sandboxes to not refresh. Default is ".protectedsandboxes.json".
 ```
 
 The above script either creates a new sandbox or refreshes an existing sandbox. Sandbox refreshes will auto-activate, so you will not be able to revert the sandbox once this script runs.
-
-Update the script to list protected branches here if you wish to prevent a sandbox from being refreshed this way.
-``` python
-DO_NOT_REFRESH = ['FullQA', 'dev']
-```
 
 ### Apex Class
 
@@ -71,20 +79,16 @@ All users in the public group will receive a password reset email once the sandb
 
 ```
 USAGE
-  $ python ./scripts/python/delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL]
+  $ python ./scripts/python/delete_sandbox.py --alias "PRODUCTION" --sandbox "$SANDBOX" [--url $FORCE_AUTH_URL] [--json ".protectedsandboxes.json"]
 
 FLAGS
   -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI. Do not provide this if you are using the --url flag.
   -s, --sandbox=<value>  Name of the sandbox to delete.
   -u, --url=<value> Production Force Auth URL to use when authenticating with the Salesforce CLI. Do not provide this if you are using the --alias flag.
+  -j, --json=<value> Path to the JSON file containing the protected sandboxes to not refresh. Default is ".protectedsandboxes.json".
 ```
 
 This script will delete sandboxes assuming the sandbox meets deletion criteria.
-
-List protected sandboxes here if you wish to prevent a sandbox from being deleted this way:
-``` python
-DO_NOT_DELETE = ['FullQA', 'dev']
-```
 
 ## Query Sandboxes
 

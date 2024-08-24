@@ -63,5 +63,5 @@ def load_protected_sandboxes_json(file_path):
             data = json.load(file)
             return data.get('do_not_refresh', [])
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        logging.warning('ERROR: Could not load the protected sandboxes list from %s: %s', file_path, e)
+        logging.warning('WARNING: Could not load the protected sandboxes list from %s: %s', file_path, e)
         return None

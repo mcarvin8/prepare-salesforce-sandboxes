@@ -11,9 +11,6 @@ import sandbox_functions
 # Format logging message
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
-# List sandboxes that shouldn't be deleted this way
-DO_NOT_DELETE = ['FullQA', 'dev']
-
 
 def parse_args():
     """

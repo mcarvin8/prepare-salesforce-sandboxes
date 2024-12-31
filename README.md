@@ -73,6 +73,8 @@ To use this Apex Class in sandbox creations and refreshes, the class must first 
 
 Update the Profile ID and public group ID in the class and test class before deploying to your org. Also update the test class users' email for your org.
 
+The Apex Class assigns the "Author_Apex" permission set available in this repository to each user in the public group. Deploy the permission set to your org first or update the Apex Class to assign an existing permission set with similar permissions.
+
 All users in the public group will receive a password reset email once the sandbox is ready.
 
 ## Delete Sandboxes

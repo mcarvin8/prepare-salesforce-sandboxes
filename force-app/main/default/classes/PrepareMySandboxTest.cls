@@ -3,10 +3,11 @@ class PrepareMySandboxTest {
     @isTest
     public static void testUpdateProfilesAndResetPasswordsForPublicGroupMembers() {
         // Create and insert test data (Public Group, Users, etc.)
-        Group publicGroup = new Group(Name = 'TestPublicGroup', Type = 'Regular');
-        insert publicGroup;
+        String publicGroupId = '00G5a000003ji0R';
 
-        Profile newProfile = [SELECT Id FROM Profile WHERE Id = '00e0b000001KWuY' LIMIT 1];
+        // Confirm test users were assigned different profile
+        Profile oldProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-Prod-Delivery' LIMIT 1];
+        Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
         
         List<User> testUsers = new List<User>();
         for (Integer i = 1; i <= 5; i++) {
@@ -17,7 +18,7 @@ class PrepareMySandboxTest {
                 LastName = 'User' + i,
                 LanguageLocaleKey = 'en_US',
                 LocaleSidKey = 'en_US',
-                ProfileId = newProfile.Id,
+                ProfileId = oldProfile.Id,
                 TimeZoneSidKey = 'America/Los_Angeles',
                 UserName = 'user' + i + '@avalara.com',
                 IsActive = true
@@ -30,7 +31,7 @@ class PrepareMySandboxTest {
 
         List<GroupMember> groupMembers = new List<GroupMember>();
         for (User user : testUsers) {
-            groupMembers.add(new GroupMember(GroupId = publicGroup.Id, UserOrGroupId = user.Id));
+            groupMembers.add(new GroupMember(GroupId = publicGroupId, UserOrGroupId = user.Id));
         }
         insert groupMembers;
 
@@ -46,6 +47,14 @@ class PrepareMySandboxTest {
         for (User user : testUsers) {
             User updatedUser = [SELECT ProfileId FROM User WHERE Id = :user.Id];
             System.assertEquals(newProfile.Id, updatedUser.ProfileId, 'User profile not updated.');
+            // Verify Author_Apex permission set assignment
+            List<PermissionSetAssignment> psAssignments = [
+                SELECT Id 
+                FROM PermissionSetAssignment 
+                WHERE AssigneeId = :user.Id 
+                AND PermissionSet.Name = 'Author_Apex'
+            ];
+            System.assertEquals(1, psAssignments.size(), 'Author_Apex permission set not assigned to user');
 
             // Attempt to log in as the user to verify the password reset
             System.runAs(user) {

@@ -26,6 +26,9 @@ global class PrepareMySandbox implements SandboxPostCopy {
                 update usersToUpdate;
                 System.debug('Profile updated for ' + usersToUpdate.size() + ' users.');
 
+                // Assign Author_Apex permission set
+                assignAuthorApexPermissionSet(usersToUpdate);
+
                 // Reset passwords for updated users
                 resetPasswords(usersToUpdate);
             } else {
@@ -73,4 +76,49 @@ global class PrepareMySandbox implements SandboxPostCopy {
         }
         System.debug('Passwords reset for ' + users.size() + ' users.');
     }
+
+    private void assignAuthorApexPermissionSet(List<User> users) {
+        PermissionSet authorApexPS = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
+    
+        // Gather user IDs
+        Set<Id> userIds = new Set<Id>();
+        for (User u : users) {
+            userIds.add(u.Id);
+        }
+    
+        // Query existing assignments
+        List<PermissionSetAssignment> existingAssignments = [
+            SELECT AssigneeId 
+            FROM PermissionSetAssignment 
+            WHERE AssigneeId IN :userIds 
+            AND PermissionSetId = :authorApexPS.Id
+        ];
+        Set<Id> alreadyAssignedUserIds = new Set<Id>();
+        for (PermissionSetAssignment psa : existingAssignments) {
+            alreadyAssignedUserIds.add(psa.AssigneeId);
+        }
+    
+        // Prepare new assignments for users without the permission set
+        List<PermissionSetAssignment> psAssignments = new List<PermissionSetAssignment>();
+        for (User u : users) {
+            if (!alreadyAssignedUserIds.contains(u.Id)) {
+                psAssignments.add(new PermissionSetAssignment(
+                    AssigneeId = u.Id,
+                    PermissionSetId = authorApexPS.Id
+                ));
+            }
+        }
+    
+        // Insert new assignments
+        if (!psAssignments.isEmpty()) {
+            try {
+                insert psAssignments;
+                System.debug('Author_Apex permission set assigned to ' + psAssignments.size() + ' users.');
+            } catch (DmlException ex) {
+                System.debug('Error during permission set assignment: ' + ex.getMessage());
+            }
+        } else {
+            System.debug('No new assignments required. All users already have the Author_Apex permission set.');
+        }
+    }    
 }

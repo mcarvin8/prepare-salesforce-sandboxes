@@ -7,8 +7,7 @@
  class PrepareMySandboxTest {
      @isTest
      public static void testUpdateProfilesAndResetPasswordsForPublicGroupMembers() {
-         // Create and insert test data (Public Group, Users, etc.)
-         String publicGroupId = '00G5a000003ji0R';
+         Group publicGroup = [SELECT Id FROM Group WHERE Name = 'AvaTech BizApps FTE Team' LIMIT 1];
  
          // Confirm test users were assigned different profiles
          Profile oldProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-Prod-Delivery' LIMIT 1];
@@ -39,7 +38,7 @@
  
          List<GroupMember> groupMembers = new List<GroupMember>();
          for (User user : testUsers) {
-             groupMembers.add(new GroupMember(GroupId = publicGroupId, UserOrGroupId = user.Id));
+             groupMembers.add(new GroupMember(GroupId = publicGroup.Id, UserOrGroupId = user.Id));
          }
          insert groupMembers;
  

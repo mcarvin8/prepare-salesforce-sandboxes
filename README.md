@@ -67,15 +67,14 @@ The above script either creates a new sandbox or refreshes an existing sandbox. 
 
 ### Apex Class
 
-The `force-app/main/default/classes/PrepareMySandbox.cls` apex class in this project will update all users in the Public Group to the desired profile and reset their passwords. 
+The `force-app/main/default/classes/PrepareMySandbox.cls` apex class in this project is designed to run post sandbox refresh and do the following operations:
+1. Set all active users in the public group named 'AvaTech BizApps FTE Team' to the 'Admin-SoD-PreProd-Delivery' profile
+2. Assign all active users in the public group named 'AvaTech BizApps FTE Team' the "Author_Apex" permission set provided in this repo
+3. Assign all active users in the public group named 'AvaTech BizApps FTE Team' the Administrator role provided in this repo
 
-To use this Apex Class in sandbox creations and refreshes, the class must first be deployed to your Production org.
+To use this Apex Class in sandbox creations and refreshes, the class must first be deployed to your Production org. Update the class and test class with your public group name and the desired profile/permission set/role if you want to use ones you already have. Update the test class to set the `oldProfile` to a different profile to confirm the class is working as intended.
 
-Update the Profile ID and public group ID in the class and test class before deploying to your org. Also update the test class users' email for your org.
-
-The Apex Class assigns the "Author_Apex" permission set available in this repository to each user in the public group. Deploy the permission set to your org first or update the Apex Class to assign an existing permission set with similar permissions.
-
-All users in the public group will receive a password reset email once the sandbox is ready.
+If you'd like, you can deploy the `Author_Apex` permission set and `Administrator` role provided in this repo to your production org if you'd like to use them.
 
 ## Delete Sandboxes
 

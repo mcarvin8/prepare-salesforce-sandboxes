@@ -19,13 +19,11 @@ global class PrepareMySandbox implements SandboxPostCopy {
     }
 
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
-        String publicGroupId = '00G5a000003ji0R';
-        String newProfileId = '00e0b000001KWuY';
-
-        Group publicGroup = getPublicGroup(publicGroupId);
+        Group publicGroup = [SELECT Id FROM Group WHERE Name = 'AvaTech BizApps FTE Team' LIMIT 1];
+        Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
 
         if (publicGroup != null) {
-            List<User> usersToUpdate = getUsersToUpdate(publicGroup, newProfileId);
+            List<User> usersToUpdate = getUsersToUpdate(publicGroup, newProfile);
 
             if (!usersToUpdate.isEmpty()) {
                 update usersToUpdate;
@@ -47,11 +45,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
         }
     }
 
-    private Group getPublicGroup(String groupId) {
-        return [SELECT Id FROM Group WHERE Id = :groupId LIMIT 1];
-    }
-
-    private List<User> getUsersToUpdate(Group publicGroup, String newProfileId) {
+    private List<User> getUsersToUpdate(Group publicGroup, Profile newProfile) {
         List<User> usersToUpdate = new List<User>();
         Set<Id> userIds = new Set<Id>();
 
@@ -67,7 +61,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
 
         // Query and update active User profiles
         for (User user : [SELECT Id, ProfileId, Email, UserRoleId FROM User WHERE Id IN :userIds AND IsActive = true]) {
-            user.ProfileId = newProfileId;
+            user.ProfileId = newProfile.Id;
             // Remove .invalid from email address
             if (user.Email != null && user.Email.contains('.invalid')) {
                 user.Email = user.Email.replace('.invalid', '');

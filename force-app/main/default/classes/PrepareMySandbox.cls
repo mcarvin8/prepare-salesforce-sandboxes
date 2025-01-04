@@ -1,3 +1,8 @@
+/*******************************************************************************************************
+ * @classname: PrepareMySandbox
+ * @tests: PrepareMySandboxTest
+ * Above annotation complies with https://github.com/renatoliveira/apex-test-list 
+ ******************************************************************************************************/
 global class PrepareMySandbox implements SandboxPostCopy {
     global PrepareMySandbox() {
         // Implementations of SandboxPostCopy must have a no-arg constructor.
@@ -29,6 +34,9 @@ global class PrepareMySandbox implements SandboxPostCopy {
                 // Assign Author_Apex permission set
                 assignAuthorApexPermissionSet(usersToUpdate);
 
+                // Assign Administrator role
+                assignAdministratorRole(usersToUpdate);
+
                 // Reset passwords for updated users
                 resetPasswords(usersToUpdate);
             } else {
@@ -58,7 +66,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
         }
 
         // Query and update active User profiles
-        for (User user : [SELECT Id, ProfileId, Email FROM User WHERE Id IN :userIds AND IsActive = true]) {
+        for (User user : [SELECT Id, ProfileId, Email, UserRoleId FROM User WHERE Id IN :userIds AND IsActive = true]) {
             user.ProfileId = newProfileId;
             // Remove .invalid from email address
             if (user.Email != null && user.Email.contains('.invalid')) {
@@ -68,6 +76,22 @@ global class PrepareMySandbox implements SandboxPostCopy {
         }
 
         return usersToUpdate;
+    }
+
+    private void assignAdministratorRole(List<User> users) {
+        // Get the Administrator Role ID
+        UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
+
+        for (User user : users) {
+            user.UserRoleId = adminRole.Id;
+        }
+
+        try {
+            update users;
+            System.debug('Administrator role assigned to ' + users.size() + ' users.');
+        } catch (DmlException ex) {
+            System.debug('Error assigning Administrator role: ' + ex.getMessage());
+        }
     }
 
     private void resetPasswords(List<User> users) {
@@ -120,5 +144,5 @@ global class PrepareMySandbox implements SandboxPostCopy {
         } else {
             System.debug('No new assignments required. All users already have the Author_Apex permission set.');
         }
-    }    
+    }
 }

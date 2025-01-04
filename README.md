@@ -75,7 +75,7 @@ The `force-app/main/default/classes/PrepareMySandbox.cls` apex class in this pro
 
 To use this Apex Class in sandbox creations and refreshes, the class must be deployed to your Production org. Update the class and test class with your public group name and the desired profile/permission set/role if you want to use ones you already have. Update the test class to set the `oldProfile` to a different profile to confirm the class is working as intended. Update the test class to create different test users (emails).
 
-If you'd like, you can deploy the `Author_Apex` permission set, the `FullTime Developers` public group, and `Administrator` role provided in this repo to your production org if you'd like to use them.
+If you'd like, you can deploy the `Author_Apex` permission set, the `Admin-SoD-PreProd-Delivery` and `Admin-SoD-Prod-Delivery` profiles, the `FullTime Developers` public group, and `Administrator` role provided in this repo and referenced in the Apex classes to your production org if you'd like to use them.
 
 ## Delete Sandboxes
 

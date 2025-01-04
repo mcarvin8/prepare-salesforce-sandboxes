@@ -21,6 +21,9 @@ global class PrepareMySandbox implements SandboxPostCopy {
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
         Group publicGroup = [SELECT Id FROM Group WHERE Name = 'AvaTech BizApps FTE Team' LIMIT 1];
         Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
+        PermissionSet authorApexPS = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
+        UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
+
 
         if (publicGroup != null) {
             List<User> usersToUpdate = getUsersToUpdate(publicGroup, newProfile);
@@ -30,10 +33,10 @@ global class PrepareMySandbox implements SandboxPostCopy {
                 System.debug('Profile updated for ' + usersToUpdate.size() + ' users.');
 
                 // Assign Author_Apex permission set
-                assignAuthorApexPermissionSet(usersToUpdate);
+                assignAuthorApexPermissionSet(usersToUpdate, authorApexPS);
 
                 // Assign Administrator role
-                assignAdministratorRole(usersToUpdate);
+                assignAdministratorRole(usersToUpdate, adminRole);
 
                 // Reset passwords for updated users
                 resetPasswords(usersToUpdate);
@@ -72,10 +75,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
         return usersToUpdate;
     }
 
-    private void assignAdministratorRole(List<User> users) {
-        // Get the Administrator Role ID
-        UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
-
+    private void assignAdministratorRole(List<User> users, UserRole adminRole) {
         for (User user : users) {
             user.UserRoleId = adminRole.Id;
         }
@@ -95,9 +95,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
         System.debug('Passwords reset for ' + users.size() + ' users.');
     }
 
-    private void assignAuthorApexPermissionSet(List<User> users) {
-        PermissionSet authorApexPS = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
-    
+    private void assignAuthorApexPermissionSet(List<User> users, PermissionSet authorApexPS) {
         // Gather user IDs
         Set<Id> userIds = new Set<Id>();
         for (User u : users) {
@@ -131,12 +129,12 @@ global class PrepareMySandbox implements SandboxPostCopy {
         if (!psAssignments.isEmpty()) {
             try {
                 insert psAssignments;
-                System.debug('Author_Apex permission set assigned to ' + psAssignments.size() + ' users.');
+                System.debug('Permission set assigned to ' + psAssignments.size() + ' users.');
             } catch (DmlException ex) {
                 System.debug('Error during permission set assignment: ' + ex.getMessage());
             }
         } else {
-            System.debug('No new assignments required. All users already have the Author_Apex permission set.');
+            System.debug('No new assignments required. All users already have the permission set.');
         }
     }
 }

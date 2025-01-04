@@ -19,7 +19,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
     }
 
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
-        Group publicGroup = [SELECT Id FROM Group WHERE Name = 'AvaTech BizApps FTE Team' LIMIT 1];
+        Group publicGroup = [SELECT Id FROM Group WHERE Name = 'FullTime Developers' LIMIT 1];
         Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
         PermissionSet authorApexPS = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
         UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];

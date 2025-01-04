@@ -7,7 +7,7 @@
  class PrepareMySandboxTest {
      @isTest
      public static void testUpdateProfilesAndResetPasswordsForPublicGroupMembers() {
-         Group publicGroup = [SELECT Id FROM Group WHERE Name = 'AvaTech BizApps FTE Team' LIMIT 1];
+         Group publicGroup = [SELECT Id FROM Group WHERE Name = 'FullTime Developers' LIMIT 1];
  
          // Confirm test users were assigned different profiles
          Profile oldProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-Prod-Delivery' LIMIT 1];

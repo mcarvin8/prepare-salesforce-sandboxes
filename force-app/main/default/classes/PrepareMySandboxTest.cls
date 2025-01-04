@@ -8,14 +8,12 @@
      @isTest
      public static void testUpdateProfilesAndResetPasswordsForPublicGroupMembers() {
          Group publicGroup = [SELECT Id FROM Group WHERE Name = 'FullTime Developers' LIMIT 1];
+         UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
  
          // Confirm test users were assigned different profiles
          Profile oldProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-Prod-Delivery' LIMIT 1];
          Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
- 
-         // Fetch the Administrator role
-         UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
- 
+
          List<User> testUsers = new List<User>();
          for (Integer i = 1; i <= 5; i++) {
              User user = new User(
@@ -54,16 +52,16 @@
          for (User user : testUsers) {
              User updatedUser = [SELECT ProfileId, UserRoleId FROM User WHERE Id = :user.Id];
              System.assertEquals(newProfile.Id, updatedUser.ProfileId, 'User profile not updated.');
-             System.assertEquals(adminRole.Id, updatedUser.UserRoleId, 'User role not updated to Administrator.');
+             System.assertEquals(adminRole.Id, updatedUser.UserRoleId, 'User role not updated.');
  
-             // Verify Author_Apex permission set assignment
+             // Verify permission set assignment
              List<PermissionSetAssignment> psAssignments = [
                  SELECT Id 
                  FROM PermissionSetAssignment 
                  WHERE AssigneeId = :user.Id 
                  AND PermissionSet.Name = 'Author_Apex'
              ];
-             System.assertEquals(1, psAssignments.size(), 'Author_Apex permission set not assigned to user');
+             System.assertEquals(1, psAssignments.size(), 'Permission set not assigned to user.');
  
              // Attempt to log in as the user to verify the password reset
              System.runAs(user) {

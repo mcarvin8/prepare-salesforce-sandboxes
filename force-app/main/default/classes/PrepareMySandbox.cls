@@ -21,7 +21,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
         Group publicGroup = [SELECT Id FROM Group WHERE Name = 'FullTime Developers' LIMIT 1];
         Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
-        PermissionSet authorApexPS = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
+        PermissionSet permSet = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
         UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
 
 
@@ -32,11 +32,11 @@ global class PrepareMySandbox implements SandboxPostCopy {
                 update usersToUpdate;
                 System.debug('Profile updated for ' + usersToUpdate.size() + ' users.');
 
-                // Assign Author_Apex permission set
-                assignAuthorApexPermissionSet(usersToUpdate, authorApexPS);
+                // Assign permission set
+                assignPermSet(usersToUpdate, permSet);
 
-                // Assign Administrator role
-                assignAdministratorRole(usersToUpdate, adminRole);
+                // Assign role
+                assignRole(usersToUpdate, adminRole);
 
                 // Reset passwords for updated users
                 resetPasswords(usersToUpdate);
@@ -75,16 +75,16 @@ global class PrepareMySandbox implements SandboxPostCopy {
         return usersToUpdate;
     }
 
-    private void assignAdministratorRole(List<User> users, UserRole adminRole) {
+    private void assignRole(List<User> users, UserRole adminRole) {
         for (User user : users) {
             user.UserRoleId = adminRole.Id;
         }
 
         try {
             update users;
-            System.debug('Administrator role assigned to ' + users.size() + ' users.');
+            System.debug('Role assigned to ' + users.size() + ' users.');
         } catch (DmlException ex) {
-            System.debug('Error assigning Administrator role: ' + ex.getMessage());
+            System.debug('Error assigning role: ' + ex.getMessage());
         }
     }
 
@@ -95,7 +95,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
         System.debug('Passwords reset for ' + users.size() + ' users.');
     }
 
-    private void assignAuthorApexPermissionSet(List<User> users, PermissionSet authorApexPS) {
+    private void assignPermSet(List<User> users, PermissionSet permSet) {
         // Gather user IDs
         Set<Id> userIds = new Set<Id>();
         for (User u : users) {
@@ -107,7 +107,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
             SELECT AssigneeId 
             FROM PermissionSetAssignment 
             WHERE AssigneeId IN :userIds 
-            AND PermissionSetId = :authorApexPS.Id
+            AND PermissionSetId = :permSet.Id
         ];
         Set<Id> alreadyAssignedUserIds = new Set<Id>();
         for (PermissionSetAssignment psa : existingAssignments) {
@@ -120,7 +120,7 @@ global class PrepareMySandbox implements SandboxPostCopy {
             if (!alreadyAssignedUserIds.contains(u.Id)) {
                 psAssignments.add(new PermissionSetAssignment(
                     AssigneeId = u.Id,
-                    PermissionSetId = authorApexPS.Id
+                    PermissionSetId = permSet.Id
                 ));
             }
         }

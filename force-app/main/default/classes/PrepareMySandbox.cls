@@ -3,7 +3,13 @@
  * @tests: PrepareMySandboxTest
  * Above annotation complies with https://github.com/renatoliveira/apex-test-list 
  ******************************************************************************************************/
-global class PrepareMySandbox implements SandboxPostCopy {
+ global class PrepareMySandbox implements SandboxPostCopy {
+    // Constants for role, profile, group, and permission set names
+    private static final String PUBLIC_GROUP_NAME = 'FullTime Developers';
+    private static final String ADMIN_ROLE_NAME = 'Administrator';
+    private static final String NEW_PROFILE_NAME = 'Admin-SoD-PreProd-Delivery';
+    private static final String PERMISSION_SET_NAME = 'Author_Apex';
+
     global PrepareMySandbox() {
         // Implementations of SandboxPostCopy must have a no-arg constructor.
         // This constructor is used during the sandbox copy process.
@@ -19,11 +25,10 @@ global class PrepareMySandbox implements SandboxPostCopy {
     }
 
     public void updateProfilesAndResetPasswordsForPublicGroupMembers() {
-        Group publicGroup = [SELECT Id FROM Group WHERE Name = 'FullTime Developers' LIMIT 1];
-        Profile newProfile = [SELECT Id FROM Profile WHERE Name = 'Admin-SoD-PreProd-Delivery' LIMIT 1];
-        PermissionSet permSet = [SELECT Id FROM PermissionSet WHERE Name = 'Author_Apex' LIMIT 1];
-        UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = 'Administrator' LIMIT 1];
-
+        Group publicGroup = [SELECT Id FROM Group WHERE Name = :PUBLIC_GROUP_NAME LIMIT 1];
+        Profile newProfile = [SELECT Id FROM Profile WHERE Name = :NEW_PROFILE_NAME LIMIT 1];
+        PermissionSet permSet = [SELECT Id FROM PermissionSet WHERE Name = :PERMISSION_SET_NAME LIMIT 1];
+        UserRole adminRole = [SELECT Id FROM UserRole WHERE Name = :ADMIN_ROLE_NAME LIMIT 1];
 
         if (publicGroup != null) {
             List<User> usersToUpdate = getUsersToUpdate(publicGroup, newProfile);

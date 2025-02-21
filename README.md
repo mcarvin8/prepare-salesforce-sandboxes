@@ -18,17 +18,6 @@ You can authenticate to your Production org in 1 of 2 ways using the Salesforce 
 
 To authenticate with an existing alias, you must provide the sandbox script with the `--alias` flag.
 
-Optionally, you can run the included SFDX authenticate script with the Force Auth URL and the desired alias before you run the sandbox scripts.
-
-```
-USAGE
-  $ python ./scripts/python/authenticate_sfdx.py --alias "PRODUCTION" --url $PRODUCTION_AUTH_URL
-
-FLAGS
-  -a, --alias=<value> Production Alias used when authenticating with the Salesforce CLI.
-  -u, --url=<value>  Production Force Auth URL.
-```
-
 ### Using a Force Auth URL
 
 To authenticate directly with a Force Auth URL, you must at least have Salesforce CLI 2.24.4 or newer installed.

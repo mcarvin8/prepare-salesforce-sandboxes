@@ -5,7 +5,7 @@ stages:
   image: ubuntu:latest
   before_script:
     - apt-get update
-    - apt-get install -y python3-venv python3 ca-certificates curl gnupg
+    - apt-get install -y python3-venv python3 ca-certificates curl gnupg jq
     - curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
     - apt-get install -y nodejs
     - npm install --global @salesforce/cli@latest

@@ -1,5 +1,5 @@
 ---
-name: Create/Refresh Sandbox
+name: Create/Refresh Sandbox - Python
 
 on:
   workflow_dispatch:

@@ -107,8 +107,6 @@ You can use the `scripts/bash/create_sandbox.sh` script to run the native Salesf
 
 Provide the script a `$SANDBOX` environment variable with the sandbox name. Set a `$DO_NOT_REFRESH` environment variable with the protected sandboxes separated by commas.
 
-
-
 ## CI/CD Examples
 
 Sample CI/CD workflows for GitHub and GitLab have been included. For other CI/CD platforms, please ensure the container used contains Python and the simple salesforce library. The scripts themselves require no updates for other platforms.

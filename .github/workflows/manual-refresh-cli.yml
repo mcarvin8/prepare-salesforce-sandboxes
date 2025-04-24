@@ -29,9 +29,13 @@ jobs:
           npm install --global @salesforce/cli@latest
           sf version --verbose --json
 
+      - name: Authenticate with production org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
+        run: echo "$SFDX_AUTH_URL" | sf org login sfdx-url --set-default --alias PRODUCTION --sfdx-url-stdin
+
       - name: Create or refresh the Sandbox
         env:
-          PRODUCTION_AUTH_URL: ${{ secrets.PRODUCTION_AUTH_URL }}
           SANDBOX: ${{ github.event.inputs.sandbox }}
-        run: |
-          source ./scripts/bash/create_sandbox.sh
+        run: ./scripts/bash/create_sandbox.sh
+  

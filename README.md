@@ -5,7 +5,11 @@ The environment requires Python 3 and the Salesforce CLI (`sf`).
 
 > This [Salesforce issue](https://issues.salesforce.com/issue/a028c00000x9ZiUAAU/release-of-selective-sandbox-access-delayed) with Public Groups in sandboxes has been resolved with API version 61. The simple salesforce connection must be established at API version 61 in order for `ActivationUserGroupId` to be present in the Tooling API. The scripts should connect to your Production org at the latest API version supported.
 
-## Authenticate to Production using the Salesforce CLI
+Now that Salesforce CLI can create and refresh sandboxes natively, I'm including a bash script that can call the Salesforce CLI to check if it's an existing sandbox and depending on that, call the right CLI command. This script includes the PROTECTED SANDBOX logic and uses the sandbox definition file in `config/sandbox-def.json` per Salesforce specification.
+
+## Python
+
+### Authenticate to Production using the Salesforce CLI
 
 You can authenticate to your Production org in 1 of 2 ways using the Salesforce CLI.
 
@@ -14,11 +18,11 @@ You can authenticate to your Production org in 1 of 2 ways using the Salesforce 
 
 > Please ensure you only use one of the 2 flags for authentication. If you provide both, it will default to alias first.
 
-### Using an Alias
+#### Using an Alias
 
 To authenticate with an existing alias, you must provide the sandbox script with the `--alias` flag.
 
-### Using a Force Auth URL
+#### Using a Force Auth URL
 
 To authenticate directly with a Force Auth URL, you must at least have Salesforce CLI 2.24.4 or newer installed.
 
@@ -96,6 +100,14 @@ FLAGS
 This script can be used to check the current sandbox status. 
 
 When the sandbox is ready for use, the status will be `Completed`.
+
+## Salesforce CLI Bash Script
+
+You can use the `scripts/bash/create_sandbox.sh` script to run the native Salesforce CLI create and refresh sandbox command.
+
+Provide the script a `$SANDBOX` environment variable with the sandbox name. Set a `$DO_NOT_REFRESH` environment variable with the protected sandboxes separated by commas.
+
+
 
 ## CI/CD Examples
 

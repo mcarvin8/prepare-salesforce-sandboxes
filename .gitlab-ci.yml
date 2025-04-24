@@ -10,20 +10,34 @@ stages:
     - apt-get install -y nodejs
     - npm install --global @salesforce/cli@latest
     - sf version --verbose --json
-    - python3 -m venv "venv"
-    - source venv/bin/activate
-    - pip install --upgrade pip
-    - pip install simple-salesforce
+
+createAndRefreshSandboxCLI:
+  stage: sandbox
+  cache: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $SANDBOX
+      when: always
+    - when: never
+  allow_failure: false
+  script:
+    - echo $PRODUCTION_AUTH_URL | sf org login sfdx-url --set-default --sfdx-url-stdin
+    - source ./scripts/bash/create_sandbox.sh
+  tags: 
+    - aws,prd,us-west-2
 
 createAndRefreshSandbox:
   extends: .salesforce-container
   stage: sandbox
   rules:
     - if: $CI_PIPELINE_SOURCE == 'web' && $SANDBOX && $LICENSE
-      when: always
+      when: manual
     - when: never
   allow_failure: false
   script:
+    - python3 -m venv "venv"
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install simple-salesforce
     - python ./scripts/python/create_sandbox.py --sandbox "$SANDBOX" --license "$LICENSE" --class "$CLASS" --group "$GROUP" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2
@@ -37,6 +51,10 @@ querySandbox:
     - when: never
   allow_failure: false
   script:
+    - python3 -m venv "venv"
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install simple-salesforce
     - python ./scripts/python/query_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2
@@ -50,6 +68,10 @@ deleteSandbox:
     - when: never
   allow_failure: false
   script:
+    - python3 -m venv "venv"
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install simple-salesforce
     - python ./scripts/python/delete_sandbox.py --sandbox "$SANDBOX" --url $PRODUCTION_AUTH_URL
   tags: 
     - aws,prd,us-west-2

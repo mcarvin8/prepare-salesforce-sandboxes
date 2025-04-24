@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('-a', '--alias', help='Production alias used for authentication', required=False)
     parser.add_argument('-s', '--sandbox', help='Name of the sandbox to delete', required=True)
     parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
-    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='.protectedsandboxes.json')
+    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='config/.protectedsandboxes.json')
     args = parser.parse_args()
     return args
 

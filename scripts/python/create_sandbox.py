@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('-c', '--class',  dest='class_id', help='Apex Class ID to run post sandbox activation', required=False)
     parser.add_argument('-g', '--group', help='Public Group ID to provide access to sandbox', required=False)
     parser.add_argument('-u', '--url', help='Force Auth URL for your production org.', required=False)
-    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='.protectedsandboxes.json')
+    parser.add_argument('-j', '--json', help='Path to the JSON file containing protected sandboxes.', default='config/.protectedsandboxes.json')
     args = parser.parse_args()
     return args
 
